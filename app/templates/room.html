@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<head>
+  <title>DUBTRACK DEMO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <style type="text/css">
+  .row playlist{
+    display: table;
+  }
+  .col-md-3{
+    height: 150px;
+    border:1px solid black;
+    background-position: center;
+    color: black;
+  }
+  .col-lg-6{
+    background-position: center;
+  }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-6 col-lg-offset-3 text-center" style="background-image: url('{{data.active_song.data.songInfo.images.thumbnail}}'); background-size: cover;">
+        <h1>CURRENT SONG</h1>
+        <b>{{data.active_song.data.songInfo.name}}</b>
+        <p>Added by: {{data.active_song_user.data.username}}</p>
+        <p>Updubs: {{data.active_song.data.song.updubs}}</p>
+        <p>Downdubs: {{data.active_song.data.song.downdubs}}</p>
+      </div>
+    </div>
+    <hr>
+    <div class="row playlist">
+      {% for item in data.room_playlist.data%}
+      <div class="col-md-3 " style="background-image: url('{{item._song.images.thumbnail}}'); background-size: cover;">
+        <b>{{item._song.name}}</b>
+        <p>Added by: <i><a href="https://www.dubtrack.fm/{{item._user.username}}">{{item._user.username}}</a></i></p>
+        <p>Updubs: {{item._song.updub}}</p>
+        <p>Downdubs: {{item._song.downdub}}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</body>
