@@ -6,4 +6,4 @@
 Total time: 1h 17 min + 2h 58 min = 4h 15 min
 ### 31/05
 3. (01:52 AM - 02:32 AM) - Learning about App Engine and making tests with the app.
-Total time: 40 min
+4. (10:30 AM - 12:00 PM) - Deploying an App Engine application for testing purposes
