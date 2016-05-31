@@ -5,7 +5,5 @@ Jinja2==2.8
 MarkupSafe==0.23
 pubnub==3.7.7
 pycrypto==2.6.1
-requests==2.10.0
 Werkzeug==0.11.10
-requests==2.10.0
 requests-toolbelt==0.6.2

@@ -1,35 +1,33 @@
 from flask import Flask, request, render_template, redirect, url_for
 import requests
+from pubnub import Pubnub
 import requests_toolbelt.adapters.appengine
 
-# Use the App Engine Requests adapter. This makes sure that Requests uses
-# URLFetch.
 requests_toolbelt.adapters.appengine.monkeypatch()
-
-
-from pubnub import Pubnub
-
 app = Flask(__name__)
 
 from flask import jsonify
 
+def make_get_request(url):
+    response = requests.get(url)
+    return response
 
 def get_room_id(room_url):
     """Returns id of the room."""
     url = 'https://api.dubtrack.fm/room/%s/' % room_url
-    r = requests.get(url)
+    r = make_get_request(url)
     return r.json()['data']['_id']
 
 def get_room_playlist(room_id):
     """Returns the playlist history of the room (20 songs)."""
     url = 'https://api.dubtrack.fm/room/%s/playlist/history' % room_id
-    r = requests.get(url)
+    r = make_get_request(url)
     return r.json()
 
 def get_room_active_song(room_id):
     """Returns the current song."""
     url = 'https://api.dubtrack.fm/room/%s/playlist/active' % room_id
-    r = requests.get(url)
+    r = make_get_request(url)
     try:
         if r.json()['data']['song']:
             return r.json()
@@ -39,7 +37,7 @@ def get_room_active_song(room_id):
 def get_username_by_id(user_id):
     """Returns the username."""
     url = 'https://api.dubtrack.fm/user/%s' % user_id
-    r = requests.get(url)
+    r = make_get_request(url)
     return r.json()
 
 @app.route('/', methods=['GET','POST'])
