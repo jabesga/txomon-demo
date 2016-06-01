@@ -5,6 +5,8 @@ from pubnub import Pubnub
 import requests
 import json
 import pymongo
+from google.appengine.ext import ndb
+
 YOUR_CHOICE_CHANNEL = 'dubtrackfm-anime'
 
 app = Flask(__name__)
@@ -31,21 +33,19 @@ def disconnect(message):
 #pubnub.subscribe(channels=YOUR_CHOICE_CHANNEL, callback=callback, error=callback,
 #                 connect=connect, reconnect=reconnect, disconnect=disconnect)
 
-from google.appengine.ext import ndb
+class Song(ndb.Model):
+    song_id = ndb.StringProperty()
+    name = ndb.StringProperty()
+    added_by = ndb.StringProperty()
+    updubs = ndb.IntegerProperty()
+    downdubs = ndb.IntegerProperty()
+    # listened_by
 
-class Account(ndb.Model):
-    username = ndb.StringProperty()
-    userid = ndb.StringProperty()
-    email = ndb.StringProperty()
+def create_and_save_model(song_id, name, added_by, updubs, downdubs):
+    song = Song(song_id=song_id, name=name, added_by=added_by, updubs=updubs, downdubs=downdubs)
+    song_key = song.put()
+    return song_key
 
-def create_model_using_keyword_arguments(name):
-    sandy = Account(
-        username='Sandy', userid=name, email='sandy@example.com')
-    return sandy
-
-def save_model(sandy):
-    sandy_key = sandy.put()
-    return sandy_key
 
 def get_url_safe_key(sandy_key):
     url_string = sandy_key.urlsafe()
@@ -56,43 +56,6 @@ def get_model_from_url_safe_key(url_string):
     sandy = sandy_key.get()
     return sandy
 
-@app.route('/api/v1/room/<room_url>/playlist/')
-def api_playlist(room_url):
-    pass
-
-@app.route('/api/v1/song/<song_id>/')
-def api_song_details(song_id):
-    result = json.loads('''
-    {
-            "song": {
-                "_id": 13123235,
-                "name": "River",
-                "added_by": "Willy",
-                "updubs": 523,
-                "downdubs": 2312,
-                "listened_by": [
-                    {
-                        "user_id": 3214124,
-                        "username": "Rallys"
-                    
-                    },
-                    {
-                        "user_id": 3214124,
-                        "username": "Rallys"
-                    
-                    },
-                    {
-                        "user_id": 3214124,
-                        "username": "Rallys"
-                    
-                    }
-                ]
-            }
-        }
-    ''')
-    return jsonify(result)
-
-# API END-POINTS
 @app.route('/')
 def index():
     return '''
@@ -100,9 +63,21 @@ def index():
     /get/url_string/ - returns data
     '''
 
-@app.route('/get/<url_string>/')
-def get_key(url_string):
-    sandy = get_model_from_url_safe_key(url_string)
+@app.route('/songs/', methods=["GET", "POST"])
+def get_all_song():
+    if request.method == "POST":
+        create_and_save_model(
+            request.data['song_id'],
+            request.data['name'],
+            request.data['added_by'],
+            request.data['updubs'],
+            request.data['downdubs'])
+    else:
+        q = Song.query()
+        return str(q)
+
+@app.route('/songs/<song_id>/')
+def get_song_by_id(song_id):
     return str(sandy)
 
 @app.route('/save/<name>')
@@ -118,5 +93,3 @@ def api_insert_into_queue(room_url):
 
 def check_message(message):
     pass
-
-#app.run(debug=True)

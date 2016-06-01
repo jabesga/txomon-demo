@@ -15,3 +15,4 @@ Total time: 40 min + 1h 30 min + 22 min + 9 h = 11h 32 min
 ### 1/06
 1. (18:30 PM - 20:30 PM) - Fixing GAE
 2. (20:30 PM - 22:00 PM) - GAE Datastore implementation
+3. (22:00 PM - 22:30 PM) - API implementation
