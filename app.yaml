@@ -33,5 +33,3 @@ handlers:
 libraries:
 - name: pycrypto
   version: "2.6"
-- name: ssl
-  version: latest

@@ -1,16 +1,13 @@
 from flask import Flask, request, render_template, redirect, url_for
 import requests_toolbelt.adapters.appengine # needed to use requests with GAE
 from flask import jsonify # pretty json responses
-from gcloud import datastore
 from pubnub import Pubnub
 import requests
 import datetime
-import gcloud
 import json
 
 YOUR_CHOICE_CHANNEL = 'dubtrackfm-anime'
-PROJECT_NAME = 'txomon-demo-1328'
-client = None
+PROJECT_NAME = 'txomon-technical-demo'
 
 app = Flask(__name__)
 
@@ -37,42 +34,9 @@ def disconnect(message):
 #pubnub.subscribe(channels=YOUR_CHOICE_CHANNEL, callback=callback, error=callback,
 #                 connect=connect, reconnect=reconnect, disconnect=disconnect)
 
-def generateEntities():
-    global client
-    client = datastore.Client(PROJECT_NAME)
-
-    song = datastore.Entity(client.key('Song', '1'))
-    result = json.loads('''
-        {
-            "playlist": [
-                {
-                    "_id": 13123235,
-                    "name": "River"
-                },
-                {"2":"hello"},
-                {"3":"hello"},
-                {"4":"hello"}
-            ]
-        }
-    ''')
-    song.update({
-            'type': 'Personal',
-            'done': False,
-            'priority': 4,
-            'description': result
-    })
-
-    client.put(song)
-
-#generateEntities()
-#my_obj = {'key-1': 'value-1', 'key-2': 'value-2'}
-#entity = MyEntity(name="my-name", obj=my_obj)
-#entity.put()
-
 @app.route('/api/v1/room/<room_url>/playlist/')
 def api_playlist(room_url):
-    
-    return jsonify(result)
+    pass
 
 @app.route('/api/v1/song/<song_id>/')
 def api_song_details(song_id):

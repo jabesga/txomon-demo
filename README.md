@@ -9,5 +9,5 @@ Total time: 1h 17 min + 2h 58 min = 4h 15 min
 1. (01:52 AM - 02:32 AM) - Learning about App Engine and making tests with the app.
 2. (10:30 AM - 12:00 PM) - Deploying an App Engine application for testing purposes
 3. (17:08 PM - 17:30 PM) - I forgot about this. Reading docs?
-4. (18:00 PM - 00:00 AM) - Let's be honest. I don't remember how much time I've used between these hours. But I know that I've been fighting against Google Cloud Datastore and the emulator.
-Total time: 40 min + 1h 30 min + 22 min + 6 h = 8h 32 min
+4. (18:00 PM - 03:00 AM) - Let's be honest. I don't remember how much time I've used between these hours. But I know that I've been fighting against Google Cloud Datastore and the emulator.
+Total time: 40 min + 1h 30 min + 22 min + 9 h = 11h 32 min
