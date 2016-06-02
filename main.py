@@ -39,22 +39,17 @@ class Song(ndb.Model):
     added_by = ndb.StringProperty()
     updubs = ndb.IntegerProperty()
     downdubs = ndb.IntegerProperty()
-    # listened_by
+    # listened_by = ndb.StringProperty(repeated=True)
 
-def create_and_save_model(song_id, name, added_by, updubs, downdubs):
+class Playlist(ndb.Model):
+    channel = ndb.StringProperty()
+    playlist_size = ndb.IntegerProperty()
+    songs_played = ndb.StructuredProperty(Song, repeated=True, required=False)
+
+def create_and_save_song(song_id, name, added_by, updubs, downdubs):
     song = Song(song_id=song_id, name=name, added_by=added_by, updubs=updubs, downdubs=downdubs)
     song_key = song.put()
     return song_key
-
-
-def get_url_safe_key(sandy_key):
-    url_string = sandy_key.urlsafe()
-    return url_string
-
-def get_model_from_url_safe_key(url_string):
-    sandy_key = ndb.Key(urlsafe=url_string)
-    sandy = sandy_key.get()
-    return sandy
 
 @app.route('/')
 def index():
@@ -63,33 +58,99 @@ def index():
     /get/url_string/ - returns data
     '''
 
-@app.route('/songs/', methods=["GET", "POST"])
-def get_all_song():
-    if request.method == "POST":
-        create_and_save_model(
-            request.data['song_id'],
-            request.data['name'],
-            request.data['added_by'],
-            request.data['updubs'],
-            request.data['downdubs'])
+@app.route('/channels/', methods=['GET', 'POST'])
+def channels():
+    if request.method == 'POST':
+        pl = Playlist(channel=request.json['channel'])
+        playlist_key = pl.put()
+        return jsonify({'response': 'ok', 'operation': 'channel_added'})
     else:
-        q = Song.query()
-        return str(q)
+        data = {'channels' : []}
+        q = Playlist.query()
+        for pl in q.fetch():
+            data['channels'].append(pl.channel)
+        return jsonify(data)
 
-@app.route('/songs/<song_id>/')
+@app.route('/channels/<channel_name>/', methods=['GET', 'POST'])
+def channel_details(channel_name):
+    if request.method == 'POST':
+        # FOR TESTING PURPOSES
+        q = Playlist.query(Playlist.channel==channel_name).fetch()
+        s = Song.query(Song.song_id==request.json['song_id']).fetch() #TODO: Avoid duplicateds
+        if s:
+            pl_model = q[0] #TODO: Be sure that fetch only one
+            pl_model.songs_played = pl_model.songs_played + s
+            pl_model.playlist_size = len(pl_model.songs_played)
+            pl_model.put()
+            return jsonify({'response': 'ok', 'operation': 'song_added_to_playlist'})
+        else:
+            return jsonify({'response': 'fail', 'operation': 'song_not_found'})
+
+    else:
+        data = {}
+        q = Playlist.query(Playlist.channel==channel_name).fetch()
+        pl = q[0]
+        data['channel'] = pl.channel
+        data['playlist'] =  []
+        for song in pl.songs_played:
+            print(str(song))
+            song_data = {
+                'song_id': song.song_id,
+                'name': song.name,
+                'added_by': song.added_by,
+                'updubs': song.updubs,
+                'downdubs': song.downdubs,
+            }
+            data['playlist'].append(song_data)
+        data['playlist_size'] = pl.playlist_size
+
+        return jsonify(data)
+
+@app.route('/songs/', methods=['GET', 'POST'])
+def get_all_song():
+    if request.method == 'POST':
+        print(request.json)
+        create_and_save_song(
+            request.json['song_id'],
+            request.json['name'],
+            request.json['added_by'],
+            request.json['updubs'],
+            request.json['downdubs'])
+        return 'Done'
+    else:
+        data = {'songs' : []}
+        s = Song.query()
+
+        for s in s.fetch():
+            song_data = {
+                'song_id': s.song_id,
+                'name': s.name,
+                'added_by': s.added_by,
+                'updubs': s.updubs,
+                'downdubs': s.downdubs,
+            }
+            data['songs'].append(song_data)
+
+        return jsonify(data)
+
+
+@app.route('/songs/<song_id>/', methods=['GET'])
 def get_song_by_id(song_id):
-    return str(sandy)
+    s = Song.query(Song.song_id==song_id).fetch()
+    s = s[0] #TODO: Avoid duplicated
+    song_data = {
+        'song_id': s.song_id,
+        'name': s.name,
+        'added_by': s.added_by,
+        'updubs': s.updubs,
+        'downdubs': s.downdubs,
+    }
+    return jsonify(song_data)
 
-@app.route('/save/<name>')
-def save(name):
-    sandy = create_model_using_keyword_arguments(name)
-    x = save_model(sandy)
-    return get_url_safe_key(x)
-
-
-@app.route('/api/v1/room/<room_url>/queue/insert/')
-def api_insert_into_queue(room_url):
-    pass
-
-def check_message(message):
-    pass
+# TO CHANGE
+@app.route('/playlist/anime/delete/', methods=['GET'])
+def delete_anime_playlist():
+    q = Playlist.query(Playlist.room=='anime')
+    for pl in q.fetch():
+        pl.key.delete()
+    return 'Deleted'
