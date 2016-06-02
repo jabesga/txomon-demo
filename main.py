@@ -43,7 +43,7 @@ class Song(ndb.Model):
 
 class Playlist(ndb.Model):
     channel = ndb.StringProperty()
-    playlist_size = ndb.IntegerProperty()
+    playlist_size = ndb.IntegerProperty(default=0)
     songs_played = ndb.StructuredProperty(Song, repeated=True, required=False)
 
 def create_and_save_song(song_id, name, added_by, updubs, downdubs):
