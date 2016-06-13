@@ -46,10 +46,6 @@ class Playlist(ndb.Model):
     playlist_size = ndb.IntegerProperty(default=0)
     songs_played = ndb.StructuredProperty(Song, repeated=True, required=False)
 
-def create_and_save_song(song_id, name, added_by, updubs, downdubs):
-    song = Song(song_id=song_id, name=name, added_by=added_by, updubs=updubs, downdubs=downdubs)
-    song_key = song.put()
-    return song_key
 
 @app.route('/')
 def index():
@@ -110,6 +106,9 @@ def channel_details(channel_name):
 def get_all_song():
     if request.method == 'POST':
         print(request.json)
+        song = Song(song_id=song_id, name=name, added_by=added_by, updubs=updubs, downdubs=downdubs)
+    song_key = song.put()
+    return song_key
         create_and_save_song(
             request.json['song_id'],
             request.json['name'],
